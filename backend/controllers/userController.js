@@ -8,12 +8,13 @@ export const register = async (req, res) => {
 
   try {
     const userExists = await User.findOne({username: username});
-    if(userExists) return res.status(404).send({message: "Username already exists"});
+    if(userExists) return res.status(404).send({message: "This username already exists. Please try again."});
 
     const hashed = await bcrypt.hash(password, 10);
     const newUser = new User({username: username, password: hashed});
     newUser.save();
-    return res.status(201).send({message: "registration successful"});
+
+    return res.status(201).send({message: "Registration successful."});
   }
   catch (err) {
     res.status(400).json({message: err.message});
@@ -26,31 +27,15 @@ export const login = async (req, res) => {
 
   try {
     const foundUser = await User.findOne({username});
-    if(!foundUser) return res.status(404).json({message: "Username does not exist."});
+    if(!foundUser) return res.status(404).json({message: "User does not exist."});
 
     const match = await bcrypt.compare(password, foundUser.password);
-    if(!match) return res.status(404).send({message: "Invalid password"});
+    if(!match) return res.status(404).send({message: "Wrong password. Please try again."});
 
     const token = jwt.sign({id:foundUser._id, username: foundUser.username}, process.env.SECRET_TOKEN, {expiresIn: "2h"});
     res.status(200).send({token: token});
   }
   catch (err) {
     res.status(400).send({err : err.message});
-  }
-}
-
-export const verifyUser = async (req, res, next) => {
-  const userToken = req.header("Authorization")?.split(' ')[1];
-  if(!userToken) res.status(401).send({message: "Login please"});
-
-  try {
-    jwt.verify(userToken, process.env.SECRET_TOKEN, (err, decoded) => {
-      if(err) return res.status(500).send({message: err.message});
-      req.user = decoded;
-      next();
-    })
-  }
-  catch(err) {
-    return res.status(400).send({message: err.message});
   }
 }

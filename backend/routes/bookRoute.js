@@ -1,13 +1,16 @@
 import express from "express";
 const booksRoute = express.Router();
 
-import {addBook, getAllBooks, getBook, updateBook, deleteBook} from "../controllers/bookController.js";
-import { verifyUser } from "../controllers/userController.js";
+import * as bookFunctions from "../controllers/bookController.js";
+import verifyUser from "../middleware/verifyUser.js";
 
-booksRoute.post("/", verifyUser, addBook);
-booksRoute.get("/", getAllBooks);
-booksRoute.get("/:id", getBook);
-booksRoute.put("/:id", verifyUser, updateBook);
-booksRoute.delete("/:id", verifyUser, deleteBook);
+booksRoute.route("/")
+  .get(bookFunctions.getAllBooks)
+  .post(verifyUser, bookFunctions.addBook);
+
+booksRoute.route("/:id")
+  .get(bookFunctions.getBook)
+  .put(verifyUser, bookFunctions.updateBook)
+  .delete(verifyUser, bookFunctions.deleteBook);
 
 export default booksRoute;
