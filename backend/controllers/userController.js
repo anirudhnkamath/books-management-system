@@ -8,11 +8,11 @@ export const register = async (req, res) => {
 
   try {
     const userExists = await User.findOne({username: username});
-    if(userExists) return res.status(404).send({message: "This username already exists. Please try again."});
+    if(userExists) return res.status(409).send({message: "This username already exists. Please try again."});
 
     const hashed = await bcrypt.hash(password, 10);
     const newUser = new User({username: username, password: hashed});
-    newUser.save();
+    await newUser.save();
 
     return res.status(201).send({message: "Registration successful."});
   }

@@ -1,8 +1,10 @@
-import React, {useState, useEffect} from 'react'
+import {useState, useEffect} from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom';
-import HomeButton from '../components/HomeButton';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Button from '../components/Button';
+import InfoComponent from '../components/InfoComponent';
 
 function DeleteBook() {
 
@@ -11,6 +13,13 @@ function DeleteBook() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if(!token){
+      navigate("/users/login");
+    }
+  },[])
+
+  function handleDelete(){
     setLoading(true);
     const token = localStorage.getItem("Token");
     if(!token) {
@@ -25,24 +34,34 @@ function DeleteBook() {
     })
       .then(() => {
         setLoading(false);
+        navigate("/");
       })
       .catch(err => {
         console.log(err);
         setLoading(false);
       });
-  }, [])
+  }
 
   return (
     <section className="min-h-screen bg-gray-50">
-      <header className="flex justify-between items-center px-6 py-5 bg-blue-600 text-white shadow-md">
-        <h1 className="text-2xl font-bold tracking-wide">Delete a Book</h1>
-      </header>
-      <div className="text-xl font-medium text-center text-gray-600 my-8">
-        Book was successfully deleted
-      </div>
-      <div className='grid place-content-center'>
-        <HomeButton />
-      </div>
+      
+      <Navbar headingText={"Add book"} buttonElementArray={[ <Button buttonContent={"Home"} handler={() => navigate("/")} key="home"/>]} />
+
+      <section className='flex flex-col justify-center gap-4'>
+        <InfoComponent contentText={"Are you sure you want to delete this book?"}/>
+
+        { loading ? (
+          <InfoComponent contentText={"Loading"} />
+        ) : (
+          <div className='flex justify-center gap-4'>
+            <Button buttonContent={"Delete"} handler={handleDelete}/>
+            <Button buttonContent={"Go to Home"} handler={() => navigate('/')}/>
+          </div>
+        )} 
+        
+
+      </section>
+    
     </section>
   )
 }

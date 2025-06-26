@@ -1,32 +1,29 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Loading from '../components/Loading';
-import HomeButton from '../components/HomeButton';
+import Navbar from '../components/Navbar';
+import Button from '../components/Button'
+import InfoComponent from "../components/InfoComponent"
 
 function EditBook() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [year, setYear] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null); // State to store error messages
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const params = useParams();
 
-  // Get token from localStorage or other secure place
-  const token = localStorage.getItem('Token');  // Assuming token is stored in localStorage
-
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const book = { title, author, year: parseInt(year) };
     setLoading(true);
-    setError(null); // Reset error state before submitting
+    setError(null);
 
-    // Check if token is available
+    const token = localStorage.getItem('Token');
     if (!token) {
-      setError('Authorization token not found.');
-      setLoading(false);
-      return;
+      navigate('/users/login');
     }
 
     axios.put(`http://localhost:3001/books/${params.id}`, book, {
@@ -40,14 +37,14 @@ function EditBook() {
       })
       .catch((err) => {
         setLoading(false);
-        setError('Failed to update the book. Please try again later.');
+        setError(err.response.data.message);
       });
   };
 
   useEffect(() => {
 
     const token = localStorage.getItem("Token");
-    if(!token){
+    if (!token) {
       setLoading(false);
       navigate("/users/login");
     }
@@ -62,26 +59,20 @@ function EditBook() {
       })
       .catch(err => {
         setLoading(false);
-        setError('Failed to fetch the book details.');
+        setError(err.response.data.message);
       });
-  }, [params.id]);
+  }, []);
 
   return (
     <section className="min-h-screen bg-gray-50">
-      <header className="flex justify-between items-center px-6 py-5 bg-blue-600 text-white shadow-md">
-        <h1 className="text-2xl font-bold tracking-wide">Edit a Book</h1>
-      </header>
+
+      <Navbar headingText={"Add book"} buttonElementArray={[<Button buttonContent={"Home"} handler={() => navigate("/")} key="home" />]} />
+
       <div className="content px-6 py-8 flex justify-center">
         <form
           onSubmit={handleSubmit}
           className="bg-white shadow-lg rounded-lg w-full max-w-md p-6 space-y-4"
         >
-          {/* Display error message if exists */}
-          {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg shadow-md">
-              <strong>Error: </strong>{error}
-            </div>
-          )}
           <div>
             <label
               htmlFor="title"
@@ -130,18 +121,16 @@ function EditBook() {
               required
             />
           </div>
-          <button
-            type="submit"
-            className={`w-full py-2 px-4 text-white font-medium rounded-lg transition-all ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
-              }`}
-            disabled={loading}
-          >
-            {loading ? 'Updating...' : 'Submit'}
-          </button>
+
+          <div className='flex justify-center'>
+            {loading ? (
+              <InfoComponent contentText={"Loading"} />
+            ) : (
+              <Button buttonContent={"Submit"} handler={() => 1} />
+            )}
+          </div>
+
         </form>
-      </div>
-      <div className='grid place-content-center'>
-        <HomeButton />
       </div>
     </section>
   );

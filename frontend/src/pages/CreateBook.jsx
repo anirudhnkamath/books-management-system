@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Home from './Home';
-import HomeButton from '../components/HomeButton';
+import Navbar from '../components/Navbar';
+import Button from '../components/Button'
+import InfoComponent from "../components/InfoComponent"
 
 function CreateBook() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [year, setYear] = useState('');
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +27,6 @@ function CreateBook() {
 
     const token = localStorage.getItem("Token");
     if(!token){
-      console.log("No TOken")
       setLoading(false);
       navigate("/");
     }
@@ -41,21 +42,23 @@ function CreateBook() {
         navigate('/');
       })
       .catch((err) => {
-        console.log(err);
         setLoading(false);
+        navigate("/");
       });
   };
 
   return (
     <section className="min-h-screen bg-gray-50">
-      <header className="flex justify-between items-center px-6 py-5 bg-blue-600 text-white shadow-md">
-        <h1 className="text-2xl font-bold tracking-wide">Add Book</h1>
-      </header>
+
+      <Navbar headingText={"Add book"} buttonElementArray={[ <Button buttonContent={"Home"} handler={() => navigate("/")} key="home"/>]} />
+        
       <div className="content px-6 py-8 flex justify-center">
+
         <form
           onSubmit={handleSubmit}
           className="bg-white shadow-lg rounded-lg w-full max-w-md p-6 space-y-4"
         >
+
           <div>
             <label
               htmlFor="title"
@@ -72,6 +75,7 @@ function CreateBook() {
               required
             />
           </div>
+
           <div>
             <label
               htmlFor="author"
@@ -88,6 +92,7 @@ function CreateBook() {
               required
             />
           </div>
+
           <div>
             <label
               htmlFor="year"
@@ -104,20 +109,19 @@ function CreateBook() {
               required
             />
           </div>
-          <button
-            type="submit"
-            className={`w-full py-2 px-4 text-white font-medium rounded-lg transition-all ${
-              loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
-            }`}
-            disabled={loading}
-          >
-            {loading ? 'Adding...' : 'Add Book'}
-          </button>
+
+          <div className='flex justify-center'>
+            { loading ? (
+            <InfoComponent contentText={"Loading"} />
+          ) : (
+            <Button buttonContent={"Submit"} handler={() => 1} />
+          )}
+          </div>
+
         </form>
+
       </div>
-      <div className='grid place-content-center'>
-        <HomeButton />
-      </div>
+      
     </section>
   );
 }

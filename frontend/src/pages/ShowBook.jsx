@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Loading from '../components/Loading';
-import HomeButton from "../components/HomeButton"
+import InfoComponent from '../components/InfoComponent';
+import Navbar from '../components/Navbar'
+import Button from '../components/Button';
 
 function ShowBook() {
   const [book, setBook] = useState({});
   const [loading, setLoading] = useState(false);
   const params = useParams();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -25,12 +29,12 @@ function ShowBook() {
 
   return (
     <section className="min-h-screen bg-gray-50">
-      <header className="flex justify-between items-center px-6 py-5 bg-blue-600 text-white shadow-md">
-        <h1 className="text-2xl font-bold tracking-wide">Book Details</h1>
-      </header>
+      
+      <Navbar headingText={"Add book"} buttonElementArray={[ <Button buttonContent={"Home"} handler={() => navigate("/")} key="home"/>]} />
+
       <div className="content px-6 py-8 flex justify-center ">
         {loading ? (
-          <Loading />
+          <InfoComponent contentText={"Loading"} />
         ) : (
           <div className="bg-white shadow-lg w-full max-w-md p-6">
             <h1 className="text-3xl font-bold text-black-600 mb-4">{book.title}</h1>
@@ -51,11 +55,6 @@ function ShowBook() {
           </div>
         )}
       </div>
-
-      <div className='grid place-content-center'>
-        <HomeButton/>
-      </div>
-
     </section>
   );
 }

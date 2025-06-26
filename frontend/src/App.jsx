@@ -1,4 +1,3 @@
-import React from 'react'
 import {Routes, Route} from "react-router-dom"
 import Home from "./pages/Home.jsx"
 import CreateBook from "./pages/CreateBook.jsx"
@@ -7,6 +6,7 @@ import EditBook from "./pages/EditBook.jsx"
 import ShowBook from "./pages/ShowBook.jsx"
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
+import NotFound from './pages/NotFound.jsx' 
 
 function App() {
   return (
@@ -18,6 +18,7 @@ function App() {
       <Route path="/books/delete/:id" element={<DeleteBook />}/>
       <Route path="/users/login/" element={<Login />}/>
       <Route path="/users/register/" element={<Register />}/>
+      <Route path="*" element={<NotFound />}/>
     </Routes>
   )
 }

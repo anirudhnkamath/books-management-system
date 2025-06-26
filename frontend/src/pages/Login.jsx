@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import HomeButton from '../components/HomeButton';
+import Navbar from '../components/Navbar'
+import Button from '../components/Button'
+import Error from '../components/Error'
+import InfoComponent from '../components/InfoComponent'
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -24,19 +27,19 @@ function Login() {
       .catch(err => {
         console.log(err);
         setLoading(false);
-        setError("Invalid Credentials");
+        setError(err.response.data.message);
       });
   };
 
   return (
     <section className="min-h-screen bg-gray-50">
-      <header className="flex justify-between items-center px-6 py-5 bg-blue-600 text-white shadow-md">
-        <h1 className="text-2xl font-bold tracking-wide">Login</h1>
-      </header>
-      <div className="content px-6 py-8 flex justify-center">
+      
+      <Navbar headingText={"Login"} buttonElementArray={[ <Button buttonContent={"Home"} handler={() => navigate("/")} key="home" />]}/>
+    
+      <div className="content px-6 py-8 flex flex-col justify-center items-center gap-4">
         <form
           onSubmit={handleSubmit}
-          className="bg-white shadow-lg rounded-lg w-full max-w-md p-6 space-y-4"
+          className="bg-white shadow-lg rounded-lg w-full max-w-md p-6 space-y-4 justify-center"
         >
           <div>
             <label
@@ -70,24 +73,21 @@ function Login() {
               required
             />
           </div>
-          <button
-            type="submit"
-            className={`w-full py-2 px-4 text-white font-medium rounded-lg transition-all ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
-              }`}
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-      </div>
-      {error && (
-        <div className="bg-red-200 text-red-800 border-l-4 border-red-500 p-4 mx-12 rounded-lg">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
 
-      <div className='grid place-content-center mt-4'>
-        <HomeButton />
+          <div className='flex justify-center'>
+            {loading ? (
+              <InfoComponent contentText={"Loading"} />
+            ) : (
+              <Button buttonContent={"Submit"} handler={() => 1} />
+            )}
+          </div>
+          
+        </form>
+    
+        {error && (
+          <Error contentText={error} />
+        )}
+
       </div>
 
     </section>
